@@ -1,0 +1,10 @@
+{
+  "stopword": [
+    "br",
+    "http",
+    "https",
+    "com",
+    "cn",
+    "org"
+  ]
+}
