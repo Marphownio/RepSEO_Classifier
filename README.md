@@ -22,6 +22,7 @@ Manually download the [Word2Vec Model](https://dl.fbaipublicfiles.com/fasttext/v
 ``` shell
 wget https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip
 ```
+And then unzip it.
 
 ### Step 3. Download Tranco List
 
@@ -89,6 +90,13 @@ After conducting detection on the entire dataset, our tool discovered a total of
 ├── Appendix_of_RepSEO.pdf
 ├── download_tranco_list.py
 ├── README.md
+├── RepSEO-package-list
+│   ├── npm
+│   │   ├── ......
+│   ├── nuget
+│   │   ├── ......
+│   ├── docker
+│   │   ├── ......
 ├── RepSEO-classifier-npm
 │   ├── ......
 ├── RepSEO-classifier-nuget
