@@ -106,7 +106,6 @@ After conducting detection on the entire dataset, our tool discovered a total of
 │   │   ├── db_init.py
 │   │   ├── docker_history.joblib
 │   │   ├── docker_official.joblib
-│   │   ├── keyword-ibt.json
 │   │   ├── keyword-media.json
 │   │   ├── keyword-plat.json
 │   │   ├── keyword-url.json
