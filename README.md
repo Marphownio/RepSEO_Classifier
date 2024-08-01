@@ -2,8 +2,33 @@
 
 *Blackhat Search Engine Optimization through REPositories (**RepSEO**)* is a novel attack vector where attackers carefully craft packages to manipulate search engine results, exploiting the credibility of software repositories to promote illicit websites.
 
-RepSEO Classifier is the tool to detected those abusive packages in npm, Nuget, Docker Hub.
-The details of feature engineering can be found in [Appendix_of_RepSEO.pdf](Appendix_of_RepSEO.pdf).
+RepSEO Classifier is the tool to detected those abusive packages in npm, Nuget, Docker Hub. 
+
+The attackers and our classifier focus on the **homepage** of packages, which are indexed by search engines. Thus, RepSEO packages often conspicuously display promotional content, which is typically illicit and **distinct** from other packages in the same software repositories. As promotion links are the core of SEO, the classifier also focuses on the **usage of links**, especially short links and unpopular links. Furthermore, attackers may upload multiple RepSEO packages using a single account considering **registration costs**, thus we consider historical behavior. We also model a benign package from their rich structure and metadata.
+
+In sum, the classifiers include features from five aspects: structure, semantics, links, metadata, and historical behavior.
+The summary of features is shown below.
+The complete feature definition and details of feature engineering can be found in [Appendix_of_RepSEO.pdf](Appendix_of_RepSEO.pdf).
+
+| Type       | Feature                            | Data Type | Length |
+|------------|------------------------------------|-----------|--------|
+| **Structure** | \# of directories                | int       | 1      |
+|            | Presence of introduction            | boolean   | 1      |
+|            | Usage of Markdown formatting        | boolean   | 1      |
+|            | Presence of code blocks             | boolean   | 1      |
+| **Semantic** |Platform semantic distances        | float     | 10     |
+| **Link**   | Ratio of internal links             | float     | 1      |
+|            | Domain diversity of external links  | int       | 1      |
+|            | Ratio of short links                | float     | 1      |
+|            | Avg. rank of external domains       | float     | 1      |
+|            | Duplication of links                | int       | 1      |
+| **Metadata** | Copyright license                 | boolean   | 1      |
+|            | Official artifact                   | boolean   | 1      |
+|            | Repository URL                      | boolean   | 1      |
+|            | Homepage URL                        | boolean   | 1      |
+|            | Domain rank of homepage URL         | float     | 1      |
+|            | \# of Download                      | int       | 1      |
+| **Historical** |User historical behavior         | float     | 25     |
 
 ## Base Environment
 - Linux 
