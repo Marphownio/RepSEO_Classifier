@@ -14,7 +14,7 @@ The complete feature definition and details of feature engineering can be found 
 |------------|------------------------------------|-----------|--------|
 | **Structure** | \# of directories                | int       | 1      |
 |            | Presence of introduction            | boolean   | 1      |
-|            | Usage of Markdown formatting        | boolean   | 1      |
+|            | Usage of HTML formatting            | boolean   | 1      |
 |            | Presence of code blocks             | boolean   | 1      |
 | **Semantic** |Platform semantic distances        | float     | 10     |
 | **Link**   | Ratio of internal links             | float     | 1      |
