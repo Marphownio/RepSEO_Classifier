@@ -1,14 +1,15 @@
 # ***RepSEO*** Classifier
 
+This is the official repository for our IEEE/ACM ICSE'25 [paper](RepSEO.pdf): 
+> Mengying Wu, Geng Hong, Wuyuao Mai, Xinyi Wu, Lei Zhang, Yingyuan Pu, Huajun Chai, Lingyun Ying, Haixin Duan, Min Yang. *Exposing the Hidden Layer: Software Repositories in the Service of SEO Manipulation*. IEEE/ACM ICSE'25 paper
+
 *Blackhat Search Engine Optimization through REPositories (**RepSEO**)* is a novel attack vector where attackers carefully craft packages to manipulate search engine results, exploiting the credibility of software repositories to promote illicit websites.
 
 RepSEO Classifier is the tool to detected those abusive packages in npm, Nuget, Docker Hub. 
 
 The attackers and our classifier focus on the **homepage** of packages, which are indexed by search engines. Thus, RepSEO packages often conspicuously display promotional content, which is typically illicit and **distinct** from other packages in the same software repositories. As promotion links are the core of SEO, the classifier also focuses on the **usage of links**, especially short links and unpopular links. Furthermore, attackers may upload multiple RepSEO packages using a single account considering **registration costs**, thus we consider historical behavior. We also model a benign package from their rich structure and metadata.
 
-In sum, the classifiers include features from five aspects: structure, semantics, links, metadata, and historical behavior.
-The summary of features is shown below.
-The complete feature definition and details of feature engineering can be found in [Appendix_of_RepSEO.pdf](Appendix_of_RepSEO.pdf).
+In sum, the classifiers include features from five aspects: structure, semantics, links, metadata, and historical behavior.The summary of features is shown below.The complete feature definition and details of feature engineering can be found in [Appendix_of_RepSEO.pdf](Appendix_of_RepSEO.pdf).
 
 | Type       | Feature                            | Data Type | Length |
 |------------|------------------------------------|-----------|--------|
@@ -30,18 +31,35 @@ The complete feature definition and details of feature engineering can be found 
 |            | \# of Download                      | int       | 1      |
 | **Historical** |User historical behavior         | float     | 25     |
 
-## Base Environment
+
+## Setup
+
+Base Environment:
 - Linux 
-- python: 3.8 or higher
+- python: 3.8
 
-## Installation
+### Step 1. Prepare Docker Environment
+Before extracting the image, please ensure that docker-related dependencies are installed on your computer. Load the docker image from the given tar file：
+```shell
+docker load -i repseo-classifier-image.tar
+```
+Then instantiate a container from the docker image:
+```shell
+docker run -it -d --name repseo-classifier repseo:v1 /bin/bash
+```
+Access the docker container and switch to the working directory:
+```shell
+docker exec -it repseo-classifier /bin/bash -c "cd /root/RepSEO_Classifier && bash"
+```
+Note: The following working directory wiil be `/root/RepSEO_Classifier` in the docker container.
 
-### Step 1. Installing Python Dependencies
+
+### Step 2. Installing Python Dependencies
 ``` shell
 pip3 install -r requirements.txt
 ```
 
-### Step 2. Download Word2Vec Model
+### Step 3. Download Word2Vec Model
 
 Manually download the [Word2Vec Model](https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip), which is trained on Wikipedia using fastText, or use the command like
 ``` shell
@@ -49,7 +67,7 @@ wget https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip
 ```
 And then unzip it.
 
-### Step 3. Download Tranco List
+### Step 4. Download Tranco List
 
 [Tranco](https://tranco-list.eu/) list of domain rank helps when detecting ***RepSEO*** packages. Download it by using the script
 ``` shell
@@ -57,15 +75,15 @@ python3 download_tranco_list.py
 ```
 
 
-### Step 4. Apply for Baidu Translate API *(Optional)*
+### Step 5. Apply for Baidu Translate API *(Optional)*
 
 Translate API is needed to help ***RepSEO*** classifier better understand the semantic context of packages. Click to apply for [Baidu Translate API](https://api.fanyi.baidu.com/) and get your AppID and Key.
 
 ## Usage
 
-***RepSEO*** classifier is consist of 3 sub-classifiers respectively for npm, NuGet and Docker Hub, all of which are of the same usage. Here we take the classifier for npm as an example.
+*RepSEO* classifier is consist of 3 sub-classifiers respectively for npm, NuGet and Docker Hub, all of which are of the same usage. Here we take the classifier for npm as an example.
 
-Change to subdirectory of npm ***RepSEO*** classifier.
+Change to subdirectory of npm *RepSEO* classifier.
 ``` shell
 cd ./RepSEO-classifier-npm/
 ```
@@ -78,12 +96,11 @@ Export environment variables for Baidu Translate API *(Optional)* .
 export BAIDU_APPID=<AppID of Baidu Translate API>
 export BAIDU_KEY=<Key of Baidu Translate API>
 ```
-Run the ***RepSEO*** classifier.
+Run the *RepSEO* classifier.
 ``` shell
 python3 classify.py
 ```
-
-## Results
+## Result
 The results generated by all three classifiers are saved in their respective directories as a csv file.
 
 ``` text
@@ -97,7 +114,9 @@ name,label,pred
 <package_name>,<package_label>,<predication_by_classifier>
 ```
 
-## Test Cases
+## Data
+
+### Test Cases
 
 25 abusive packages and 25 non-abusive packages are prepared respectively for npm, NuGet and Docker Hub, which are saved in their respective directories.
 ``` text
@@ -106,11 +125,15 @@ name,label,pred
 ./RepSEO-classifier-docker/test_case/
 ```
 
-## Abusive Packages List
-After conducting detection on the entire dataset, our tool discovered a total of 3,801,682 ***RepSEO*** packages in npm, NuGet, Docker Hub. Details are listed in RepSEO-package-list for [npm](./RepSEO-package-list/npm), [NuGet](./RepSEO-package-list/nuget) and [Docker Hub](./RepSEO-package-list/docker) respectively. To meet the file size limitation of Anonymous Github, the CSV file is split into multiple sub chunks.
+### Abusive Packages List
+After conducting detection on the entire dataset, our tool discovered a total of 3,801,682 ***RepSEO*** packages in npm, NuGet, Docker Hub. Details are listed in the following directories respectively. To meet the file size limitation, the CSV file is split into multiple sub chunks.
+``` text
+./RepSEO-package-list/npm/
+./RepSEO-package-list/nuget/
+./RepSEO-package-list/docker/
+```
 
 ## Project Structure
-
 ```
 ├── Appendix_of_RepSEO.pdf
 ├── download_tranco_list.py
@@ -155,3 +178,14 @@ After conducting detection on the entire dataset, our tool discovered a total of
 - `feature.py`: Feature extraction Tool
 - `file_extractor.py`: Analyze compression package (for npm and NuGet)
 - `word2vec.py`: Code for Word2vec Model
+
+
+## Citation
+```text
+@inproceedings{wu2025seo,
+  author    = {Mengying Wu and Geng Hong and Wuyuao Mai and Xinyi Wu and Lei Zhang and Yingyuan Pu and Huajun Chai and Lingyun Ying and Haixin Duan and Min Yang},
+  title     = {Exposing the Hidden Layer: Software Repositories in the Service of SEO Manipulation},
+  year      = {2025}, 
+  booktitle = {Proceedings of the IEEE/ACM 47th International Conference on Software Engineering},
+}
+```
