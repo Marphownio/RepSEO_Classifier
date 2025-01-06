@@ -38,40 +38,57 @@ Base Environment:
 - Linux 
 - python: 3.8
 
-### Step 1. Prepare Docker Environment
-Before extracting the image, please ensure that docker-related dependencies are installed on your computer. Load the docker image from the given tar file：
+Download our artifacts by:
 ```shell
-docker load -i repseo-classifier-image.tar
+git clone git@github.com:Marphownio/RepSEO_Classifier.git
+cd ./RepSEO_Classifier
 ```
-Then instantiate a container from the docker image:
-```shell
-docker run -it -d --name repseo-classifier repseo:v1 /bin/bash
-```
-Access the docker container and switch to the working directory:
-```shell
-docker exec -it repseo-classifier /bin/bash -c "cd /root/RepSEO_Classifier && bash"
-```
-Note: The following working directory wiil be `/root/RepSEO_Classifier` in the docker container.
+### Step 0. Prepare Docker Environment (*Recommand, Optional*)
+To avoid any impact on the host machine from the code execution, it is recommended to use our artifacts in Docker container. Before building the image, please ensure that docker-related dependencies are installed on your computer. 
 
+Build a Python environment in docker.
+```shell
+docker pull python:3.8
+```
+Then instantiate a container from the docker image.
+```shell
+docker run -it -d --name repseo-classifier python:3.8 /bin/bash
+```
+Copy source code to the container.
+```shell
+docker cp . repseo-classifier:/RepSEO_Classifier
+```
+Access the docker container and switch to the working directory.
+```shell
+docker exec -it repseo-classifier /bin/bash -c "cd /RepSEO_Classifier && bash"
+```
+Note if you use docker in this step, the following operations are executed within docker container.
 
-### Step 2. Installing Python Dependencies
+### Step 1. Installing Python Dependencies
+
 ``` shell
 pip3 install -r requirements.txt
 ```
 
-### Step 3. Download Word2Vec Model
+### Step 2. Download Word2Vec Model
 
-Manually download the [Word2Vec Model](https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip), which is trained on Wikipedia using fastText, or use the command like
+Manually download the [Word2Vec Model](https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip), which is trained on Wikipedia using fastText, or use the command.
 ``` shell
 wget https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip
 ```
-And then unzip it.
+And then unzip it to get the `.vec` model.
 
-### Step 4. Download Tranco List
+### Step 3. Download Tranco List
 
-[Tranco](https://tranco-list.eu/) list of domain rank helps when detecting ***RepSEO*** packages. Download it by using the script
+[Tranco](https://tranco-list.eu/) list of domain rank helps when detecting ***RepSEO*** packages. Download it by using the script.
 ``` shell
 python3 download_tranco_list.py
+```
+
+### Step 4. Download NLTK Model
+An NLTK model to download for natural language processing.
+``` shell
+python3 download_nltk_model.py
 ```
 
 
@@ -87,9 +104,9 @@ Change to subdirectory of npm *RepSEO* classifier.
 ``` shell
 cd ./RepSEO-classifier-npm/
 ```
-Export environment variables for Word2Vec Model.
+Export environment variables for Word2Vec Model you save in Step 2.
 ``` shell
-export WIKI_PATH=<the path of the Word2Vec Model you save in Step 2>
+export WIKI_PATH=/path/to/wiki.en.vec
 ```
 Export environment variables for Baidu Translate API *(Optional)* .
 ``` shell
@@ -135,8 +152,10 @@ After conducting detection on the entire dataset, our tool discovered a total of
 
 ## Project Structure
 ```
+├── RepSEO.pdf
 ├── Appendix_of_RepSEO.pdf
 ├── download_tranco_list.py
+├── download_nltk_model.py
 ├── README.md
 ├── RepSEO-package-list
 │   ├── npm
