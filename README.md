@@ -1,7 +1,7 @@
 # ***RepSEO*** Classifier
 
 This is the official repository for our IEEE/ACM ICSE'25 [paper](RepSEO.pdf): 
-> Mengying Wu, Geng Hong, Wuyuao Mai, Xinyi Wu, Lei Zhang, Yingyuan Pu, Huajun Chai, Lingyun Ying, Haixin Duan, Min Yang. *Exposing the Hidden Layer: Software Repositories in the Service of SEO Manipulation*. IEEE/ACM ICSE'25 paper
+> Mengying Wu, Geng Hong, Wuyuao Mai, Xinyi Wu, Lei Zhang, Yingyuan Pu, Huajun Chai, Lingyun Ying, Haixin Duan, Min Yang. *Exposing the Hidden Layer: Software Repositories in the Service of SEO Manipulation*. IEEE/ACM ICSE'25
 
 *Blackhat Search Engine Optimization through REPositories (**RepSEO**)* is a novel attack vector where attackers carefully craft packages to manipulate search engine results, exploiting the credibility of software repositories to promote illicit websites.
 
@@ -200,6 +200,8 @@ After conducting detection on the entire dataset, our tool discovered a total of
 
 
 ## Citation
+
+If you find our work helpful, we would greatly appreciate it if you could cite our paper using the following BibTeX format.
 ```text
 @inproceedings{wu2025seo,
   author    = {Mengying Wu and Geng Hong and Wuyuao Mai and Xinyi Wu and Lei Zhang and Yingyuan Pu and Huajun Chai and Lingyun Ying and Haixin Duan and Min Yang},
