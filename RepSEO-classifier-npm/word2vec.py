@@ -51,6 +51,7 @@ class TextPreprocessor:
         return tokens
     '''
 
+    # Retrieve the 10 most frequent words.
     def get_top_words(self, text, num_words=10):
         tokens = self.tokenize_text(text)
         word_frequencies = {}
@@ -80,6 +81,7 @@ class TextVectorizer:
         distance = self.word2vec.distance(word1, word2)
         return distance
 
+    # Calculate the average distances
     def get_average_distances(self, list1, list2):
         avg_distances = []
         for word1 in list1:
@@ -99,6 +101,7 @@ class TextVectorizer:
                 continue
         return avg_distances
 
+    # Calculate the minimal distances
     def get_min_distances(self, list1, list2):
         min_distances = []
         for word1 in list1:

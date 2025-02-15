@@ -77,6 +77,8 @@ class FeatureExtractor:
     def get_structure_feature(self):
         structure_feature = []
         overview = ''
+
+        # check if there is any description information
         if self.doc and "name" in self.doc:
             if "full_description" in self.doc and self.doc["full_description"] is not None:
                 overview = self.doc["full_description"]
@@ -88,7 +90,7 @@ class FeatureExtractor:
             structure_feature = structure_feature + [0]
         
         
-        
+        # check markdown and html syntax
         # if .md or not 0代表html,1代表md
         md_flag = 0
         if overview != '' and overview is not None:
@@ -120,6 +122,7 @@ class FeatureExtractor:
         
         
     def get_semantic_feature(self):
+        # Calculate semantic relevant features.
         if self.doc and "name" in self.doc:
             self.text = self.doc["name"]
             if "description" in self.doc and self.doc["description"] is not None:
@@ -150,12 +153,12 @@ class FeatureExtractor:
 
 
     def get_url_feature(self):
-        # get urls
+        # Calculate url relevant features.
         url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         urls = url_pattern.findall(self.text)
         total_urls_num = len(urls)
 
-        # load files
+        # load files to get urls information
         with open(get_locale("keyword-url"), 'r') as f:
             key = json.load(f)
             internal_urls = key['internal-url']
@@ -243,6 +246,8 @@ class FeatureExtractor:
         for item in docker_history_database:
             if item["namespace"] ==  self.author:
                 target_doc = item
+        
+        # Integrate the user's historical behavior data.
         
         if target_doc is None:
             ctx_features = current_features

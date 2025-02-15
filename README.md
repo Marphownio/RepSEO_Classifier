@@ -181,9 +181,7 @@ After conducting detection on the entire dataset, our tool discovered a total of
 
 ## Scalability
 
-Our ***RepSEO*** classifier can be scaled to other software repositories. 
-- First, we added descriptions to directories and files, along with detailed code comments, to ensure that future researchers can fully understand the code. 
-- Besides, to adapt to other platforms, modifications can be made to `feature.py` according to the feature table we provided and adjust `file_extractor.py` to change the package extraction method. Fewer code modifications are sufficient to ensure a smooth adaption to other platforms.
+Our ***RepSEO*** classifier can be scaled to other software repositories. To adapt to other platforms, modifications can be made to `feature.py` according to the feature table we provided and adjust `file_extractor.py` to change the package extraction method. Fewer code modifications are sufficient to ensure a smooth adaption to other platforms.
 
 
 ## Citation

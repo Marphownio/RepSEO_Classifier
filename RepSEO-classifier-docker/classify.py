@@ -26,6 +26,7 @@ class classify:
         
         
     def load_test_case(self):
+        # load test case for classification
         document_list = []
         label_list = []
         name_list = []
@@ -41,6 +42,7 @@ class classify:
         
 
     def record_result(self,name_list,label_list,pred_list):
+        # function to store final classification result
         timestamp = str(time.time())
         directory = "./result"
         df = pd.DataFrame({
@@ -54,15 +56,18 @@ class classify:
         df.to_csv(directory+"/result_"+timestamp+".csv",index=False)
         
     def if_official(self,slug):
+        # to check if a docker image is official
         for item in self.docker_official_database:
             if item["slug"] == slug:
                 return True
         return False
 
     def analysis(self):
+        # function to get package's information, feature and perform classification
         name_list,label_list,document_list = self.load_test_case()
         pred_list = []
 
+        # classify the packages to be tested in sequence.
         for item in document_list:
             # check if no overview
             if "full_description" not in item or item["full_description"]=="" or item["full_description"] is None:
@@ -78,8 +83,12 @@ class classify:
                 continue
 
             features = []
+
+            # extrate features form information and metadata got before
             extractor = FeatureExtractor(item, self.word2vec)
             features.append(extractor.total_features())
+
+            # use feature to perform classification
             label_pred = self.classifier.predict(features)
             pred_list.append(label_pred)
             

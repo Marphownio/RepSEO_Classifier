@@ -22,22 +22,22 @@ class FilePreprocessor:
         self.metadata = ''
 
     def unzip(self):
-        # 打开zip文件
+        # open zip file
         file_path = self.path
         try:
             with zipfile.ZipFile(file_path, 'r') as zip_file:
                 directories = set()
                 for file_info in zip_file.infolist():
-                    # 提取文件名及其路径
+                    # Extract file name and its path
                     file_path = file_info.filename
                     # print(file_path)
                     if file_path.endswith('/'):
-                        # 获取目录路径
+                        # Get directory path
                         directory = '/'.join(file_path.split('/')[:-1])
                         directories.add(directory)
-                    # 排除空目录，并返回目录数量
+                    # Exclude empty directories and return the number of directories
                 self.dirnum = len(directories - {''})
-                # 解压全部文件到指定目录
+                # Extract all files to the specified directory
                 for file in zip_file.namelist():
                     if file.endswith('.nuspec') or file.endswith('.md'):
                         zip_file.extract(file, self.dir)
@@ -49,8 +49,9 @@ class FilePreprocessor:
     def get_content(self):
         metadata = ''
         readme = ''
-        # 读取解压后的文件内容
-        folder_path = self.dir  # 指定文件夹路径
+        # Read the contents of the decompressed file
+        folder_path = self.dir  
+        # Specify folder path
         for file_path in glob.glob(folder_path + '/*.nuspec'):
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
@@ -68,7 +69,7 @@ class FilePreprocessor:
         readme_tag = 0
         if os.path.isfile(os.path.join(folder_path, 'readme.md')):
             try:
-                # 读取 readme.md 文件内容
+                # Read the contents of the readme. md file
                 with open(os.path.join(folder_path, 'readme.md'), 'r') as file:
                     readme = file.read()
                     # print(readme)
@@ -83,7 +84,7 @@ class FilePreprocessor:
         
         if os.path.isfile(os.path.join(folder_path, 'Readme.md')):
             try:
-                # 读取 readme.md 文件内容
+                # Read the contents of the readme. md file
                 with open(os.path.join(folder_path, 'Readme.md'), 'r') as file:
                     readme = file.read()
                     # print(readme)
@@ -98,7 +99,7 @@ class FilePreprocessor:
         
         if os.path.isfile(os.path.join(folder_path, 'README.md')):
             try:
-                # 读取 readme.md 文件内容
+                # Read the contents of the readme. md file
                 with open(os.path.join(folder_path, 'README.md'), 'r') as file:
                     readme = file.read()
                     # print(readme)
@@ -115,6 +116,7 @@ class FilePreprocessor:
         self.readme = readme
 
     def extract_info(self):
+        # Integrate all information
         error_flag = self.unzip()
         if error_flag:
             return self.author, self.description, self.dirnum, self.license, self.readme, self.projectURL, self.repository, error_flag

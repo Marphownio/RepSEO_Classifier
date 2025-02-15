@@ -27,6 +27,7 @@ class classify:
         
         
     def load_test_case(self):
+        # load test case for classification
         path_list = []
         label_list = []
         name_list = []
@@ -50,6 +51,7 @@ class classify:
         
 
     def record_result(self,name_list,label_list,pred_list):
+        # function to store final classification result
         timestamp = str(time.time())
         directory = "./result"
         df = pd.DataFrame({
@@ -64,15 +66,22 @@ class classify:
 
 
     def analysis(self):
+        # function to get package's information, feature and perform classification
         name_list,path_list,label_list = self.load_test_case()
         pred_list = []
-
+        
+        # classify the packages to be tested in sequence.
         for filename,path in zip(name_list,path_list):
+            # get raw file information and metadata
             processor = FilePreprocessor(filename,path)
             author, description, dirnum, license, readme, projectURL, repository, error_flag = processor.extract_info()
+            
+            # extrate features form information and metadata got before
             extractor = FeatureExtractor(filename, author, description, dirnum, license, readme, projectURL, repository, self.word2vec)
             features = []
             features.append(extractor.total_features())
+
+            # use feature to perform classification
             label_pred = self.classifier.predict(features)
             pred_list.append(label_pred)
             

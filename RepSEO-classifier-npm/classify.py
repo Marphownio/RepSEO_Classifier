@@ -26,6 +26,7 @@ class classify:
         
         
     def load_test_case(self):
+        # load test case for classification
         tar_file_list = []
         json_file_list = []
         label_list = []
@@ -56,6 +57,7 @@ class classify:
         
 
     def record_result(self,name_list,label_list,pred_list):
+        # function to store final classification result
         timestamp = str(time.time())
         directory = "./result"
         df = pd.DataFrame({
@@ -70,19 +72,27 @@ class classify:
 
 
     def analysis(self):
+        # function to get package's information, feature and perform classification
         name_list,label_list,tar_file_list,json_file_list = self.load_test_case()
         pred_list = []
 
+        # classify the packages to be tested in sequence.
         for tar_file_path,json_file_path,name in zip(tar_file_list,json_file_list,name_list):\
-            
+            # get raw file information and metadata
             file_extracor = FileExtractor(tar_file_path,json_file_path,name)
             doc = file_extracor.get_doc()
+
+            # If no descriptive text is present, no classification will be performed.
             if doc["text"].strip() == None or doc["text"].strip() == '':
                 pred_list.append("non-abuse")
                 continue
             features = []
+
+            # extrate features form information and metadata got before
             extractor = FeatureExtractor(doc, self.word2vec)
             features.append(extractor.total_features())
+
+            # use feature to perform classification
             label_pred = self.classifier.predict(features)
             pred_list.append(label_pred)
             

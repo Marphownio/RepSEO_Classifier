@@ -72,6 +72,7 @@ class FeatureExtractor:
         self.ctx_features = self.get_ctx_features()
         
     def total_features(self):
+        # Consolidate all the features into a single list.
         total_features = self.structure_features + self.semantics_features + self.url_features + self.metadata_features + self.ctx_features
         print(total_features)
         return total_features
@@ -92,15 +93,15 @@ class FeatureExtractor:
         Presence of code blocks boolean 1
         '''
         structure_feats = []
-        # 目录数
+        # get number of directories
         structure_feats.append(1/(self.dirnums+1))
-        # 是否有介绍
+        # check if there is any description information
         if self.overview == "" or self.overview is None:
             structure_feats.append(0)
         else:
             structure_feats.append(1)
             
-        # markdown 语法
+        # check markdown syntax
         md_flag = 1
         if self.text_and_readme != '' and self.text_and_readme is not None:
             html_tags=['</p>', '</li>', '</ol>', '</a>', '</h1>', '</h2>', '</h3>', '</h4>',
@@ -125,13 +126,13 @@ class FeatureExtractor:
         self.mysql_db = pymysql.connect(host='10.252.176.233',
                                         port=6612,
                                         user='root',
-                                        password='N0@npm',
+                                        password='1234',
                                         database='black_seo_bk')
 
     def get_semantic_feature(self):
+        # Calculate semantic relevant features.
         processor = TextPreprocessor()
         keywords = processor.get_top_words(self.text_and_readme)
-        # print(keywords)
         
         with open(get_locale("keyword-plat"), 'r') as f:
             key = json.load(f)
@@ -150,12 +151,12 @@ class FeatureExtractor:
         return plat_semantics_features
 
     def get_url_feature(self):
-        # get urls
+        # Calculate url relevant features.
         url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         urls = url_pattern.findall(self.text_and_readme)
         total_urls_num = len(urls)
 
-        # load files
+        # load files to get urls information
         with open(get_locale("keyword-url"), 'r') as f:
             key = json.load(f)
             internal_urls = key['internal-url']
@@ -267,6 +268,7 @@ class FeatureExtractor:
             if item["author"] ==  author:
                 target_doc = item
         
+        # Integrate the user's historical behavior data.
         if target_doc is None:
             ctx_features = current_features
             nuget_history_database.append({"author": author, "last1": current_features, "last2": None})

@@ -79,13 +79,13 @@ class FeatureExtractor:
         '''
         structure_feature = []
         
-        # 目录数量
+        # get number of directories
         structure_feature.append(1/(self.doc["num_dirs"]+1))
         
-        # 是否有readme
+        # check if there is any description information
         structure_feature.append(self.doc["read_me_flag"])
         
-        # markdown 语法
+        # check markdown syntax
         md_flag = 1
         if self.doc["read_me"] != '' and self.doc["read_me"] is not None:
             html_tags=['</p>', '</li>', '</ol>', '</a>', '</h1>', '</h2>', '</h3>', '</h4>',
@@ -105,6 +105,7 @@ class FeatureExtractor:
         return structure_feature
         
     def get_semantic_feature(self):
+        # Calculate semantic relevant features.
         processor = TextPreprocessor()
         keywords = processor.get_top_words(self.doc["text_trans"])
         # print(keywords)
@@ -128,7 +129,7 @@ class FeatureExtractor:
         
 
     def get_url_feature(self):
-        # get urls
+        # Calculate url relevant features.
         url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         urls = url_pattern.findall(self.doc["read_me"])
         total_urls_num = len(urls)
@@ -230,6 +231,7 @@ class FeatureExtractor:
         
     
     def total_exec_features(self):
+        # Consolidate all the features into a single list.
         return  self.structure_features + self.semantics_features + self.url_features + self.metadata_features
     
     
@@ -244,7 +246,8 @@ class FeatureExtractor:
         for item in npm_history_database:
             if item["user_name"] ==  user_name:
                 target_doc = item
-        
+
+        # Integrate the user's historical behavior data.
         if target_doc is None:
             ctx_features = current_features
             npm_history_database.append({"user_name": user_name, "last1": current_features, "last2": None})
@@ -270,7 +273,7 @@ class FeatureExtractor:
         print(total_features)
         return total_features
 
-        
+    # perform translation if need
     def translate_baidu(self, text):
         try:
             try:
