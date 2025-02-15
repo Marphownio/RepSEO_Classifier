@@ -78,10 +78,6 @@ Change to subdirectory of npm *RepSEO* classifier.
 ``` shell
 cd ./RepSEO-classifier-npm/
 ```
-Export environment variables for Word2Vec Model you save in Step 2.
-``` shell
-export WIKI_PATH=/path/to/wiki.en.vec
-```
 Export environment variables for translate API *(Optional)* . Skip this step if you do not apply for any translation API.
 ``` shell
 # If you chose Baidu for translation
