@@ -22,6 +22,13 @@ baidu_key = os.environ.get('BAIDU_KEY')
 if baidu_key == None:
     baidu_key = "null"
 
+GOOGLE_ACCESS_TOKEN = os.environ.get('GOOGLE_ACCESS_TOKEN')
+if GOOGLE_ACCESS_TOKEN == None:
+    GOOGLE_ACCESS_TOKEN = "null"
+PROJECT_NUMBER_OR_ID = os.environ.get('PROJECT_NUMBER_OR_ID')
+if PROJECT_NUMBER_OR_ID == None:
+    PROJECT_NUMBER_OR_ID = "null"
+
 
 class FeatureExtractor:
     def __init__(self, doc, model):
@@ -31,7 +38,12 @@ class FeatureExtractor:
         self.vectorizer = TextVectorizer(model)
         
         try:
-            self.doc["text_trans"] = self.translate_baidu(self.doc["text"])
+            if baidu_appid != 'null' and baidu_key != 'null':
+                self.doc["text_trans"] = self.translate_baidu(self.doc["text"])
+            elif GOOGLE_ACCESS_TOKEN != 'null' and PROJECT_NUMBER_OR_ID != 'null':
+                self.doc["text_trans"] = self.translate_google(self.doc["text"])
+            else:
+                self.doc["text_trans"] = self.doc["text"]
         except Exception as e:
             self.doc["text_trans"] = self.doc["text"]
             print(e)
@@ -301,3 +313,30 @@ class FeatureExtractor:
             # 处理JSON解析异常
             print("JSON解析异常:", e)
         return text
+    
+
+    def translate_google(self, text: str):
+        try:
+            headers = {
+                'Authorization': f'Bearer {GOOGLE_ACCESS_TOKEN}',
+                'x-goog-user-project': f'{PROJECT_NUMBER_OR_ID}',  # 替换为您的项目编号或ID
+                'Content-Type': 'application/json; charset=utf-8',
+            }
+
+            data = {
+                "q": text,
+                "target": "en",
+                "format": "text"
+            }
+
+            # 发送POST请求
+            response = requests.post(
+                'https://translation.googleapis.com/language/translate/v2',
+                headers=headers,
+                json=data
+            )
+            res = response.json()
+            return res['data']['translations'][0]['translatedText']
+        except Exception as e:
+            print(e)
+            return text

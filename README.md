@@ -34,71 +34,45 @@ In sum, the classifiers include features from five aspects: structure, semantics
 
 ## Setup
 
-Base Environment:
+Base environment requirement:
 - Linux 
 - python: 3.8
+- 10GB or more of disk space
 
 Download our artifacts by:
 ```shell
-git clone git@github.com:Marphownio/RepSEO_Classifier.git
+git clone https://github.com/Marphownio/RepSEO_Classifier.git
 cd ./RepSEO_Classifier
 ```
-### Step 0. Prepare Docker Environment (*Recommand, Optional*)
+### Step 1. Prepare Docker Environment
 To avoid any impact on the host machine from the code execution, it is recommended to use our artifacts in Docker container. Before building the image, please ensure that docker-related dependencies are installed on your computer. 
 
-Build a Python environment in docker.
+Build docker image.
 ```shell
-docker pull python:3.8
+docker build -t repseo_classifier .
 ```
-Then instantiate a container from the docker image.
+Then enter docker container.
 ```shell
-docker run -it -d --name repseo-classifier python:3.8 /bin/bash
+docker run -it --name repseo repseo_classifier bash -c "cd /RepSEO_Classifier && bash"
 ```
-Copy source code to the container.
-```shell
-docker cp . repseo-classifier:/RepSEO_Classifier
-```
-Access the docker container and switch to the working directory.
-```shell
-docker exec -it repseo-classifier /bin/bash -c "cd /RepSEO_Classifier && bash"
-```
-Note if you use docker in this step, the following operations are executed within docker container.
+Please note that the following steps will all be executed inside the docker container.
 
-### Step 1. Installing Python Dependencies
+### Step 2. Apply for Translate API *(Optional)*
 
-``` shell
-pip3 install -r requirements.txt
-```
+Translate API is needed to help ***RepSEO*** classifier better understand the semantic context of packages. You can choose to apply for one of the following translate API.
+- Google Translate. Click [here](https://cloud.google.com/translate/docs/overview) and get Google Cloud's `Access token` and `Project number or id`.
+- Baidu Translate. Click [here](https://api.fanyi.baidu.com/) and get Baidu's `AppID` and `Key`.
 
-### Step 2. Download Word2Vec Model
-
-Manually download the [Word2Vec Model](https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip), which is trained on Wikipedia using fastText, or use the command.
-``` shell
-wget https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip
-```
-And then unzip it to get the `.vec` model.
-
-### Step 3. Download Tranco List
-
-[Tranco](https://tranco-list.eu/) list of domain rank helps when detecting ***RepSEO*** packages. Download it by using the script.
-``` shell
-python3 download_tranco_list.py
-```
-
-### Step 4. Download NLTK Model
-An NLTK model to download for natural language processing.
-``` shell
-python3 download_nltk_model.py
-```
-
-
-### Step 5. Apply for Baidu Translate API *(Optional)*
-
-Translate API is needed to help ***RepSEO*** classifier better understand the semantic context of packages. Click to apply for [Baidu Translate API](https://api.fanyi.baidu.com/) and get your AppID and Key.
 
 ## Usage
 
-*RepSEO* classifier is consist of 3 sub-classifiers respectively for npm, NuGet and Docker Hub, all of which are of the same usage. Here we take the classifier for npm as an example.
+*RepSEO* classifier is consist of 3 sub-classifiers respectively for npm, NuGet and Docker Hub, all of which are of the same usage. We have prepared relevant test cases as input for the classifier. Each test case includes the metadata from the packages as well as their source files. For each repository, 25 abusive packages and 25 non-abusive packages are prepared and saved in their respective directories.
+
+- `./RepSEO-classifier-npm/test_case/`
+- `./RepSEO-classifier-nuget/test_case/`
+- `./RepSEO-classifier-docker/test_case/`
+
+The output of the classifier is the classification result for all test cases, and each test case will be labeled as `abuse` or `non-abuse`. Since the usage for all classifiers is the same, here we take the classifier for npm as an example. 
 
 Change to subdirectory of npm *RepSEO* classifier.
 ``` shell
@@ -108,15 +82,22 @@ Export environment variables for Word2Vec Model you save in Step 2.
 ``` shell
 export WIKI_PATH=/path/to/wiki.en.vec
 ```
-Export environment variables for Baidu Translate API *(Optional)* .
+Export environment variables for translate API *(Optional)* . Skip this step if you do not apply for any translation API.
 ``` shell
-export BAIDU_APPID=<AppID of Baidu Translate API>
-export BAIDU_KEY=<Key of Baidu Translate API>
+# If you chose Baidu for translation
+export BAIDU_APPID=<Your AppID of Baidu Translate API>
+export BAIDU_KEY=<Your Key of Baidu Translate API>
+
+# If you chose Google Cloud for translation
+export GOOGLE_ACCESS_TOKEN=<Your Access Token of Google Cloud Translate API>
+export PROJECT_NUMBER_OR_ID=<Your Number or ID of Google Cloud Translate API Project>
 ```
 Run the *RepSEO* classifier.
 ``` shell
 python3 classify.py
 ```
+Please note that loading the Word2Vec model may take some time. The expected runtime for each classifier to process the test cases is approximately `6` minutes.
+
 ## Result
 The results generated by all three classifiers are saved in their respective directories as a csv file.
 
@@ -133,15 +114,6 @@ name,label,pred
 
 ## Data
 
-### Test Cases
-
-25 abusive packages and 25 non-abusive packages are prepared respectively for npm, NuGet and Docker Hub, which are saved in their respective directories.
-``` text
-./RepSEO-classifier-npm/test_case/
-./RepSEO-classifier-nuget/test_case/
-./RepSEO-classifier-docker/test_case/
-```
-
 ### Abusive Packages List
 After conducting detection on the entire dataset, our tool discovered a total of 3,801,682 ***RepSEO*** packages in npm, NuGet, Docker Hub. Details are listed in the following directories respectively. To meet the file size limitation, the CSV file is split into multiple sub chunks.
 ``` text
@@ -151,27 +123,29 @@ After conducting detection on the entire dataset, our tool discovered a total of
 ```
 
 ## Project Structure
-```
-├── RepSEO.pdf
-├── Appendix_of_RepSEO.pdf
-├── download_tranco_list.py
-├── download_nltk_model.py
+```shell
 ├── README.md
-├── RepSEO-package-list
+├── RepSEO.pdf                                
+├── Appendix_of_RepSEO.pdf
+├── download_word2vec_model.sh        # Runtime environment setup file
+├── download_tranco_list.py           # Runtime environment setup file
+├── download_nltk_model.py            # Runtime environment setup file
+├── Dockerfile                        # Runtime environment setup file
+├── RepSEO-package-list               # Lists of all detected abusive packages
 │   ├── npm
 │   │   ├── ......
 │   ├── nuget
 │   │   ├── ......
 │   ├── docker
 │   │   ├── ......
-├── RepSEO-classifier-npm
+├── RepSEO-classifier-npm               # Files of npm classifier
 │   ├── ......
-├── RepSEO-classifier-nuget
+├── RepSEO-classifier-nuget             # Files of NuGet classifier
 │   ├── ......
-├── RepSEO-classifier-docker
-│   ├── db
+├── RepSEO-classifier-docker            # Files of Docker classifier
+│   ├── db                                 # Local database
 │   │   ├── db_init.py
-│   │   ├── docker_history.joblib
+│   │   ├── docker_history.joblib          
 │   │   ├── docker_official.joblib
 │   │   ├── keyword-media.json
 │   │   ├── keyword-plat.json
@@ -180,24 +154,29 @@ After conducting detection on the entire dataset, our tool discovered a total of
 │   │   ├── locale_config.py
 │   │   ├── new-stopword.json
 │   │   └── rank_domain.csv
-│   ├── model
-│   │   └── RFC.joblib
-│   ├── result
+│   ├── model                              # Model of pre-trained classifier model
+│   │   └── RFC.joblib                  
+│   ├── result                             # Output files of classifier
 │   │   └── ......
-│   ├── test_case
+│   ├── test_case                          # Test cases(input) of classifier
 │   │   └── ......
-│   ├── classify.py
-│   ├── feature.py
-│   ├── file_extractor.py
-│   └── word2vec.py
+│   ├── classify.py                        # Entry point of classifier
+│   ├── feature.py                         # Feature extraction Tool
+│   ├── file_extractor.py                  # Compression package analyzer
+│   └── word2vec.py                        # Code for Word2vec Model
 ```
+> *The directory structure of the 3 classifiers is the same, so we will not elaborate further.* 
+### Code File Illustration
+- `classify.py`: Entry point and core implementation of each classifier.
+- `file_extractor.py`: Extract the source information from the compressed package file (for npm and NuGet).
+- `word2vec.py`: Perform vectorization on the extracted text-based source information.
+- `feature.py`: Extract the features required by the classifier from the source information.
 
-### Code Illustration
-- `classify.py`: Entry point of each classifier
-- `feature.py`: Feature extraction Tool
-- `file_extractor.py`: Analyze compression package (for npm and NuGet)
-- `word2vec.py`: Code for Word2vec Model
-
+### Directory Illustration
+- `db`: Used as a local database to store essential information supporting the classifier, including platform-specific keywords, database configurations, user history, domain rankings, and more.
+- `model`: Include the source files of the pre-trained classification model.
+- `test_case`: Include pre-prepared test cases, which serve as inputs for the model. Each test case includes the metadata from the packages as well as their source files.
+- `result`: Store the outputs of the classifier.
 
 ## Citation
 
