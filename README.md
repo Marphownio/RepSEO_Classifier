@@ -92,7 +92,7 @@ Run the *RepSEO* classifier.
 ``` shell
 python3 classify.py
 ```
-Please note that loading the Word2Vec model may take some time. The expected runtime for classifiers is as follows. However, the actual execution time will also depend on the hardware and software environment.
+Please note that the classification process may take some time. Specifically, loading the word2vec model takes approximately `5` minutes, and classifying each package requires around `0.8` seconds. For the provided test case of 50 packages, the total runtime is approximately `6` minutes. Please note that the actual execution time may vary depending on the hardware and software environment.
 
 |              | **Loading Word2Vec Model** | **Package Processing Rate** |
 |-------------------|----------------------------|-----------------------------|
